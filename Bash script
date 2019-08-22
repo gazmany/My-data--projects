@@ -1,0 +1,29 @@
+#!/bin/bash
+echo "hello user"
+firstline=$(head -n 1 source/changelog.md)
+read -a splitfirstline <<< $firstline
+version=${splitfirstline[1]}
+echo $version
+
+echo "is version ok?"
+read versioncontinue
+
+if [ $versioncontinue -eq 1 ]
+then
+	echo "ok"
+  for filename in source/*
+  do
+  	if [ "$filename" == "source/secretinfo.md" ]
+  		then echo $filename "not being copied"
+  	else	echo $filename "being copied"
+    cp $filename build/.
+    fi
+  done
+else
+	echo "change version"
+fi
+
+cd build
+echo " this are the files in the build directory, under version " $version
+ls
+cd ..
