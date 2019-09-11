@@ -1,0 +1,52 @@
+with sub as
+(
+select id, subscription_start as 's_start', subscription_end as 's_end', segment
+  from subscriptions
+),
+
+months as 
+(select '2017-01-01' as first, '2017-01-31' as last
+ union
+ select '2017-02-01' as first, '2017-02-28' as last
+ union
+ select '2017-03-01' as first, '2017-03-31' as last 
+),
+
+cross_join as
+(
+select *
+  from sub
+  cross join months
+),
+
+status as
+(
+select id, first as 'month', 
+  case 
+  when segment=87 then 1
+  else 0
+  end as is_active_87,
+  case
+  when segment=30 then 1
+  else 0
+  end as is_active_30,
+  case
+  when (segment=87) and (s_end between first and last)  then 1
+  else 0
+  end as 'is_canceled_87',
+    case
+  when (segment=30) and (s_end between first and last )  then 1
+  else 0
+  end as 'is_canceled_30'
+  from cross_join
+),
+
+status_aggregate as
+(
+select month,sum(is_active_87), sum(is_active_30), sum(is_canceled_87), sum(is_canceled_30),1/(1.0*sum(is_active_30)/sum(is_canceled_30))
+  from status
+  group by month
+)
+
+select *
+from status_aggregate;
