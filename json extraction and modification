@@ -1,0 +1,29 @@
+import json
+import pandas as pd
+from pandas.io.json import json_normalize 
+df=pd.read_json(r'C:\Users\Yakov\Documents\Test Lab\CGI-PL.json',orient='split')
+df.head()
+str1=''
+df['content_new']=''
+for i in range(0,len(df.content)):
+    for j in range(0,len(df.content[i])):
+        str1+=' '+(df['content'][i][j]['word'])
+    df['content_new'][i]=str1
+    str1=''
+df.head(10)
+df['label_name_new']=''
+str1=''
+for i in range(0,len(df.label_name)):
+    for j in range(0,len(df.label_name[i])):
+        str1+=' '+(df['label_name'][i][j]['word'])
+    df['label_name_new'][i]=str1
+    str1=''
+df.head(20)
+df_new=df[['label_name_new','content_new']]
+df_new.insert(1,'Lab','')
+df_new.insert(2,'Lab-B','')
+df_new.insert(4,'Con','')
+df_new.insert(5,'Blo-C','')
+df_new.insert(6,'Ass','')
+df_new.head(10)
+df_new.to_csv(r'C:\Users\Yakov\Documents\Test Lab\CGI-PL.csv')
