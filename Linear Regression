@@ -1,0 +1,35 @@
+def get_y(m, b, x):
+  return m*x+b
+
+
+#Write your calculate_error() function here
+def calculate_error(m,b,point):
+    x,y=point
+    y_value=get_y(m,b,x)
+    return abs(y_value-y)
+    
+ #Write your calculate_all_error function here
+  def calculate_all_error (m, b, points):
+    error=0
+    for i in points:
+        error+= calculate_error(m,b,i)
+    return error
+    
+ possible_ms = [x*0.1 for x in range(-100, 101)]
+ possible_bs = [b*0.1 for b in range(-200, 201)]
+ 
+ datapoints = [(1, 2), (2, 0), (3, 4), (4, 4), (5, 3)]
+smallest_error=float("inf")
+best_m=0
+best_b=0
+
+for m in possible_ms:
+    for b in possible_bs:
+        er=calculate_all_error(m,b,datapoints)
+        if er<smallest_error:
+            smallest_error=er
+            best_m=m
+            best_b=b
+            
+            
+print(best_m, best_b, smallest_error)
