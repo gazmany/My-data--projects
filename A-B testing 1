@@ -1,0 +1,42 @@
+import pandas as pd
+#load file
+ad_clicks = pd.read_csv('ad_clicks.csv')
+
+print(ad_clicks.head())
+
+v_source=ad_clicks.groupby('utm_source').user_id.count().reset_index()
+print(v_source)
+
+#click true/false column
+ad_clicks['is_click']=ad_clicks.ad_click_timestamp.apply(lambda x: pd.notnull(x) )
+
+# calculate clicks percentage per source
+clicks_by_source=ad_clicks.groupby(['utm_source', 'is_click']).user_id.count().reset_index()
+clicks_pivot=clicks_by_source.pivot(columns='is_click', index='utm_source', values='user_id')
+clicks_pivot['percent_clicked']=clicks_pivot[True]/(clicks_pivot[True]+\
+                                                   clicks_pivot[False])*100
+print(clicks_pivot)
+
+# check if test group are same size
+abc=ad_clicks.groupby('experimental_group').user_id.count().reset_index()
+print(abc)
+
+
+ab_click=ad_clicks.groupby(['experimental_group','is_click']).user_id.count().reset_index()
+
+#split test groups
+a_clicks=ad_clicks[ad_clicks.experimental_group=='A']
+b_clicks=ad_clicks[ad_clicks.experimental_group=='B']
+
+#calcualte for group A
+a_clicks_ad=a_clicks.groupby(['day', 'is_click']).user_id.count().reset_index()
+a_clicks_ad_pivot=a_clicks_ad.pivot(columns='is_click', index='day', values='user_id')
+a_clicks_ad_pivot['perc']= a_clicks_ad_pivot[True]/(a_clicks_ad_pivot[True]+a_clicks_ad_pivot[False])*100
+
+#Calculate for group B
+b_clicks_ad=b_clicks.groupby(['day', 'is_click']).user_id.count().reset_index()
+b_clicks_ad_pivot=b_clicks_ad.pivot(columns='is_click', index='day', values='user_id')
+b_clicks_ad_pivot['perc']= b_clicks_ad_pivot[True]/(b_clicks_ad_pivot[True]+b_clicks_ad_pivot[False])*100
+
+print(b_clicks_ad_pivot)
+print(a_clicks_ad_pivot)
